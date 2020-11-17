@@ -24,16 +24,16 @@ def checkbelike(t1,t2,t3):
     
     rate= ded/total*100
     if t1==t2==t3==False:
-        print('No pre-existing condition:',round(rate,2),'%')
+        print('  No pre-existing condition:',round(rate,2),'%')
 
     else:
         st='' 
         if t1==True:
-            st+='Diabetes '
+            st+='  Diabetes '
         if t2==True:
-            st+='Abnormal BP '
+            st+='  Abnormal_BP '
         if t3==True:
-            st+='Respiratory Illness '
+            st+='  Respiratory_Illness '
         st+=':'
         print(st, round(rate,2), '%')
         
