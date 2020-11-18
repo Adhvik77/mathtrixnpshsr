@@ -2,7 +2,7 @@
 generate each record and each column of data'''
 
 import csv
-
+import codecs
 records=[]
 columns=[]
 diseases=[]
@@ -11,37 +11,42 @@ def fieldHeadings():
     fieldDict={'Time of Infection':1,'Time of reporting':2,'x location':3,'y location':4,'Age':5,'Diabetes':6,'Respiratory Illnesses':7,'Abnormal Blood Pressure':8,'Outcome':9}
     return fieldDict
     
-def getRecord():
+def getRecord(name):
     global records
+    #with codecs.open(name, 'r', encoding='utf-32',errors='ignore') as csvfile:
     #with open('C:\\Users\\Humans\\Documents\\My Docs-Disha\\py\\mathrix2020\\COVID_Dataset.csv','r+') as csvfile:
     #with open("C:\\Users\\Humans\\Documents\\My Docs-Disha\\py\\mathrix2020\\emp.csv","r+") as csvfile:
-    with open("COVID_Dataset.csv","r+") as csvfile:
+    with open(name,"r+") as csvfile:
         reader=csv.reader(csvfile)
-        for i in reader :
-            if i!=[]:
-                records.append(i)
-       # print(records)
+        #print(reader)
+        try:
+            
+            for i in reader :
+                if i!=[]:
+                    records.append(i)
+        except(UnicodeDecodeError):
+            print("error")# print(records)
                 
     return records
         
         
 
-def getColumn(colnum):
+def getColumn(colnum,name):
     global columns
     global records
     columns=[]
-    getRecord()
+    getRecord(name)
     
     for i in records:
         columns.append(i[colnum-1])
     return columns[1::]
         
-def getDiseases():
+def getDiseases(name):
     #function to get the number of diseases a patient suffers from
     global diseases
     global records
     fieldDict=fieldHeadings()
-    getRecord()
+    getRecord(name)
     for pat in records:
         num=0
         #converting data to 1/0
@@ -76,11 +81,13 @@ def getDiseases():
         diseases.append(num)
 
     return diseases
+
 #print(getColumn(9))
-#getColumn(5)
+#print(getColumn(5,"COVID_dataset.csv"))
 
 #print(getDiseases())
-    
+#print(get("COVID_dataset.csv"))
+
             
         
         
