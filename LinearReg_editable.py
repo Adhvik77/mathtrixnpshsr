@@ -7,8 +7,8 @@ import csv
 import health_data as hd
 import numpy as np
 from sklearn.linear_model import LinearRegression
-def linReg(tup,pred=[0.0]):
-    pred=np.array(pred).reshape(-1,1)
+def linReg(tup,pred=[0,0,0,0]):
+    pred=np.array(pred)
     x=tup[0]
     y=tup[1]
    ''' x1=t[0]
@@ -40,7 +40,7 @@ def makeTupleList(n1,n2,name):
             val=1
         else:
             val=0
-        lt+=[(l1[i],val,l3[i],l4[i],l5[i])]
+        lt+=[((l1[i]/10),val,l3[i],l4[i],l5[i])]
     return lt
 def getArray(t):
     arrx,arry=[],[]
