@@ -200,19 +200,59 @@ print('Well, it seems to be working')
 - c4: abnormally high death rate = check for varying strain
 - c5: herd immunity distance time(60%)
 '''
-c1=c2=c3=c4=c5={}
-for i in range(5):
+lm=10
+c1=c2=c3=c4=c5=[]
+c1max=c2max=c3max=c4max=[]
 
+for i in range(lm):
+    c1.append(G[0][i])
+    c2=c3=c4=c1
+    c1max.append([G[0][i].irate , G[0][i].t])
+    c2max.append(G[0][i].DA[4])
+    c3max.append(G[0][i].irate)
+    c4max.append(G[0][i].dr)
+    
+    if G[0][i].irate>=60:
+        c5.append(j)
 
+for i in range(lm-1):
+    for j in range(lm-i-1):
+        print(c4max)
+        if c4max[j]>c4max[j+1]:
+            c4max[j],c4max[j+1]=c4max[j+1],c4max[j]
+            c4[j],c4[j+1]=c4[j+1],c4[j]
+        if c3max[j]>c3max[j+1]:
+            c3max[j],c3max[j+1]=c3max[j+1],c3max[j]
+            c3[j],c3[j+1]=c3[j+1],c3[j]
+        if c2max[j]>c2max[j+1]:
+            c2max[j],c2max[j+1]=c2max[j+1],c2max[j]
+            c2[j],c2[j+1]=c2[j+1],c2[j]
+'''
 
+cut=0
 for i in G:
-        
-    #herd immunity
-    for j in i:
-        if j.irate>=60:
-            c5.append(j)
-        
- 
+    if cut==0:
+        for j in i[lm:]:
+            cut+=1
+    else:
+        for j in i:
+            #herd immunity
+            if j.irate>=60:
+                c5.append(j)
+
+            #lockdown
+            if 
+    
+
+
+'''
+
+
+
+
+
+
+
 
 
 
