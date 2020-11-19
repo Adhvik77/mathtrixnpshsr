@@ -201,7 +201,7 @@ total.display_data()
 print('Well, it seems to be working')
 
 #total.lagscore=total.irate*total.t
-print('avg:',total.lagscore)
+#print('avg:',total.lagscore)
 
 
 #------------------------DATA_INTERPRETATION------------------------#
@@ -288,7 +288,7 @@ cf=[]
 for i in c4[:int(cc/2)]:
     cf.append(i)
     print(i.dr)
-print('avg dr: ', total.dr)
+#print('avg dr: ', total.dr)
 
 c4=cf
 
@@ -327,10 +327,19 @@ def cprint(c):
     return(coord)
 
 
+general='''General Information:
 
-print(cprint(c1))
-print(cprint(c2))
-print(cprint(c3))
-print(cprint(c4))
-print(cprint(c5))
+Population: '''
+general +=str(total.pop) + '\nCases: '
+general+= str(total.inf) + '\nDeaths: '
+general+= str(total.deds) + '\nMortality Rate: '
+general+= str(total.dr) + '%\n\tMortality Rates by Age:\n\t'
+general+='''0-10  : \t''' + str(total.DA[0]) + '''%
+\t10-20 : \t''' + str(total.DA[1]) + '''%
+\t20-40 : \t''' + str(total.DA[2]) + '''%
+\t40-60 : \t''' + str(total.DA[3]) + '''%
+\t>60   : \t''' + str(total.DA[4]) + '%'
 
+
+
+#------------------------END------------------------#
