@@ -1,6 +1,6 @@
 '''
 Vital info by grid
-author: Ishaan Mishra, Dhruv Bhatia
+authors: Ishaan Mishra, Dhruv Bhatia
 18th November, 2020
 '''
 
@@ -12,7 +12,6 @@ G=[]
 GI=[]
 grid_width=20
 grid_length=20
-
 
 #------------------------SETUP------------------------#
 
@@ -31,9 +30,13 @@ class stats:
         self.DA=[[0,0],[0,0],[0,0],[0,0],[0,0]]
         self.t=0
         self.irate=0
+        self.lagscore=0
+        self.x=0
+        self.y=0
     def display_data(self):
         print(self.pop, self.inf, self.deds, self.dr, self.DD, self.DA, self.t, self.irate)
-
+    def displa_location(self):
+        pass
 
 with open ('COVID_Dataset.csv','r') as f:
     reader=csv.reader(f)
@@ -59,6 +62,8 @@ for i in range(grid_width):
     for j in range(grid_length):
         k=stats()
         k.pop=int(pop[counter][:-2])
+        k.x=i
+        k.y=j
         totalpop+=int(pop[counter][:-2])
         g.append(k)
         counter+=1
@@ -87,8 +92,6 @@ tval=[
 [False, True, False],
 [False, False, True],
 [False, False, False]]
-
-
 
 
 #------------------------FUNCTIONS------------------------#
@@ -129,7 +132,7 @@ def checkbelikedisease(t1,t2,t3, L):
             if i[8]=='Dead':
                 ded+=1
     if total==0:
-        rate='N/A' #if there is no one with the diseases infected in the area
+        rate=-1 #if there is no one with the diseases infected in the area
     else:
         rate= round(ded/total*100,2)
 
@@ -162,19 +165,19 @@ def calc_stats(L,stats):
     stats.t=round(stats.t,2)
     stats.irate=round(stats.inf/stats.pop*100,2)
     if stats.inf==0:
-        stats.dr='N/A'
+        stats.dr=-1
     else:    
         stats.dr=round(stats.deds/stats.inf*100,2)
     for i in range(len(stats.DA)):
         if stats.DA[i][1]==0:
-            stats.DA[i]='N/A'
+            stats.DA[i]=-1
         else:
             stats.DA[i]=round(stats.DA[i][0]/stats.DA[i][1]*100,2)
         
-
+    stats.lagscore=stats.irate*stats.t
+    #testing(c1)print(stats.lagscore)
     #print(cellcount, 'calculated')
-    cellcount+=1
-                
+    cellcount+=1           
 
 #------------------------DATA_COLLECTION------------------------#
 tetet=0
@@ -189,72 +192,109 @@ total.display_data()
 
 print('Well, it seems to be working')
 
+#total.lagscore=total.irate*total.t
+print('avg:',total.lagscore)
 
-    
 
 #------------------------DATA_INTERPRETATION------------------------#
 '''
-- c1: high cases, high lag = suggest testing
+- c1: high cases, high lag = suggest testing [irate, t]
 - c2: many old dedz, = improve health infra
-- c3: inf/pop high = implement lockdown
+- c3: irate high = implement lockdown
 - c4: abnormally high death rate = check for varying strain
 - c5: herd immunity distance time(60%)
 '''
 lm=10
+
+
 c1=c2=c3=c4=c5=[]
-c1max=c2max=c3max=c4max=[]
 
-for i in range(lm):
-    c1.append(G[0][i])
-    c2=c3=c4=c1
-    c1max.append([G[0][i].irate , G[0][i].t])
-    c2max.append(G[0][i].DA[4])
-    c3max.append(G[0][i].irate)
-    c4max.append(G[0][i].dr)
-    
-    if G[0][i].irate>=60:
-        c5.append(j)
+def testing():
+    global total,G, c1
+    for j in G:
+        for i in j:
+            if i.t>= total.t and i.irate>total.irate:
+                c1.append(i)
 
-for i in range(lm-1):
-    for j in range(lm-i-1):
-        print(c4max)
-        if c4max[j]>c4max[j+1]:
-            c4max[j],c4max[j+1]=c4max[j+1],c4max[j]
-            c4[j],c4[j+1]=c4[j+1],c4[j]
-        if c3max[j]>c3max[j+1]:
-            c3max[j],c3max[j+1]=c3max[j+1],c3max[j]
-            c3[j],c3[j+1]=c3[j+1],c3[j]
-        if c2max[j]>c2max[j+1]:
-            c2max[j],c2max[j+1]=c2max[j+1],c2max[j]
-            c2[j],c2[j+1]=c2[j+1],c2[j]
-'''
-
-cut=0
-for i in G:
-    if cut==0:
-        for j in i[lm:]:
-            cut+=1
-    else:
-        for j in i:
-            #herd immunity
-            if j.irate>=60:
-                c5.append(j)
-
-            #lockdown
-            if 
-    
-
-
-'''
+testing()
+for i in range(len(c1)-1):
+    for j in range(len(c1)-1-i):
+        if c1[j].lagscore<c1[j+1].lagscore:
+            c1[j+1],c1[j]=c1[j],c1[j+1]
+cf=[]
+for i in c1[:10]:
+    cf.append(i)
+c1=cf
 
 
 
+def infrastructure():
+    global total,G, c2
+    for j in G:
+        for i in j:
+            if i.DA[4]>= total.DA[4]:
+                c2.append(i)
+
+infrastructure()
+for i in range(len(c2)-1):
+    for j in range(len(c2)-1-i):
+        if c2[j].DA[4]<c2[j+1].DA[4]:
+            c2[j+1],c2[j]=c2[j],c2[j+1]
+cf=[]
+for i in c2[:10]:
+    cf.append(i)
+c2=cf
 
 
+def lockdown():
+    global total,G, c3
+    for j in G:
+        for i in j:
+            if i.irate>= total.irate:
+                c3.append(i)
+
+lockdown()
+for i in range(len(c3)-1):
+    for j in range(len(c3)-1-i):
+        if c3[j].irate<c3[j+1].irate:
+            c3[j+1],c3[j]=c3[j],c3[j+1]
+cf=[]
+for i in c3[:10]:
+    cf.append(i)
+c3=cf
 
 
+def strain():
+    global total,G, c4
+    for j in G:
+        for i in j:
+            if i.dr>= total.dr:
+                c4.append(i)
 
+strain()
+for i in range(len(c4)-1):
+    for j in range(len(c4)-1-i):
+        if c4[j].dr<c4[j+1].dr:
+            c4[j+1],c4[j]=c4[j],c4[j+1]
+cf=[]
+for i in c4[:10]:
+    cf.append(i)
 
+c4=cf
 
+def herd_immunity():
+    global total,G, c5
+    for j in G:
+        for i in j:
+            if i.irate>= 60:#acc to WHO, herd immunity when infected between 50,90
+                c5.append(i)
 
-
+herd_immunity()
+for i in range(len(c5)-1):
+    for j in range(len(c5)-1-i):
+        if c5[j].irate<c5[j+1].irate:
+            c5[j+1],c5[j]=c5[j],c5[j+1]
+cf=[]
+for i in c5[:10]:
+    cf.append(i)
+c5=cf
