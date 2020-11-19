@@ -1,6 +1,6 @@
 '''
 Vital info by grid
-authors: Ishaan Mishra, Dhruv Bhatia
+author: Ishaan Mishra, Dhruv Bhatia
 18th November, 2020
 '''
 
@@ -12,6 +12,7 @@ G=[]
 GI=[]
 grid_width=20
 grid_length=20
+
 
 #------------------------SETUP------------------------#
 
@@ -52,10 +53,11 @@ with open('Population.csv','r') as f:
     reader=csv.reader(f)
     for row in reader:  
         if c!=0:
-            pop.append(row[2])
-            
-            
+            pop.append(row[2])        
         c+=1
+
+
+checklist=[]  
 counter=0
 for i in range(grid_width):
     g=[]
@@ -64,6 +66,9 @@ for i in range(grid_width):
         k.pop=int(pop[counter][:-2])
         k.x=i
         k.y=j
+        if [k.x,k.y] in checklist:
+            print([k.x,k.y])
+        checklist.append([k.x,k.y])
         totalpop+=int(pop[counter][:-2])
         g.append(k)
         counter+=1
@@ -92,6 +97,8 @@ tval=[
 [False, True, False],
 [False, False, True],
 [False, False, False]]
+
+
 
 
 #------------------------FUNCTIONS------------------------#
@@ -174,10 +181,11 @@ def calc_stats(L,stats):
         else:
             stats.DA[i]=round(stats.DA[i][0]/stats.DA[i][1]*100,2)
         
-    stats.lagscore=stats.irate*stats.t
+    stats.lagscore=(50+stats.irate)*stats.t
     #testing(c1)print(stats.lagscore)
     #print(cellcount, 'calculated')
-    cellcount+=1           
+    cellcount+=1
+                
 
 #------------------------DATA_COLLECTION------------------------#
 tetet=0
@@ -204,8 +212,8 @@ print('avg:',total.lagscore)
 - c4: abnormally high death rate = check for varying strain
 - c5: herd immunity distance time(60%)
 '''
-lm=10
 
+cc=10
 
 c1=c2=c3=c4=c5=[]
 
@@ -213,7 +221,7 @@ def testing():
     global total,G, c1
     for j in G:
         for i in j:
-            if i.t>= total.t and i.irate>total.irate:
+            if i.t>= total.t and i.irate>total.irate and i not in c1:
                 c1.append(i)
 
 testing()
@@ -222,17 +230,15 @@ for i in range(len(c1)-1):
         if c1[j].lagscore<c1[j+1].lagscore:
             c1[j+1],c1[j]=c1[j],c1[j+1]
 cf=[]
-for i in c1[:10]:
+for i in c1[:cc]:
     cf.append(i)
 c1=cf
-
-
 
 def infrastructure():
     global total,G, c2
     for j in G:
         for i in j:
-            if i.DA[4]>= total.DA[4]:
+            if i.DA[4]>= total.DA[4] and i not in c2:
                 c2.append(i)
 
 infrastructure()
@@ -241,8 +247,9 @@ for i in range(len(c2)-1):
         if c2[j].DA[4]<c2[j+1].DA[4]:
             c2[j+1],c2[j]=c2[j],c2[j+1]
 cf=[]
-for i in c2[:10]:
-    cf.append(i)
+for i in c2[:cc]:
+    if i not in cf:
+        cf.append(i)
 c2=cf
 
 
@@ -250,7 +257,7 @@ def lockdown():
     global total,G, c3
     for j in G:
         for i in j:
-            if i.irate>= total.irate:
+            if i.irate>= total.irate and i not in c3:
                 c3.append(i)
 
 lockdown()
@@ -259,16 +266,17 @@ for i in range(len(c3)-1):
         if c3[j].irate<c3[j+1].irate:
             c3[j+1],c3[j]=c3[j],c3[j+1]
 cf=[]
-for i in c3[:10]:
+for i in c3[:cc]:
     cf.append(i)
 c3=cf
+
 
 
 def strain():
     global total,G, c4
     for j in G:
         for i in j:
-            if i.dr>= total.dr:
+            if i.dr>= total.dr and i not in c4:
                 c4.append(i)
 
 strain()
@@ -277,16 +285,19 @@ for i in range(len(c4)-1):
         if c4[j].dr<c4[j+1].dr:
             c4[j+1],c4[j]=c4[j],c4[j+1]
 cf=[]
-for i in c4[:10]:
+for i in c4[:int(cc/2)]:
     cf.append(i)
+    print(i.dr)
+print('avg dr: ', total.dr)
 
 c4=cf
+
 
 def herd_immunity():
     global total,G, c5
     for j in G:
         for i in j:
-            if i.irate>= 60:#acc to WHO, herd immunity when infected between 50,90
+            if i.irate>= 60 and i not in c5:#acc to WHO, herd immunity when infected between 50,90
                 c5.append(i)
 
 herd_immunity()
@@ -295,6 +306,31 @@ for i in range(len(c5)-1):
         if c5[j].irate<c5[j+1].irate:
             c5[j+1],c5[j]=c5[j],c5[j+1]
 cf=[]
-for i in c5[:10]:
+for i in c5:
     cf.append(i)
 c5=cf
+
+
+#------------------------RETURNING_INFO------------------------#
+
+def cprint(c):
+    coord=[]
+    for i in c:
+        coord.append([i.x+1,i.y+1])
+    for i in range(len(coord)-1):
+        for j in range(len(coord)-1-i):
+            if coord[j][0]==coord[j+1][0]:
+                if coord[j][1]>coord[j+1][1]:
+                    coord[j+1],coord[j]=coord[j],coord[j+1]
+            elif coord[j][0]>coord[j+1][0]:
+                    coord[j+1],coord[j]=coord[j],coord[j+1]
+    return(coord)
+
+
+
+print(cprint(c1))
+print(cprint(c2))
+print(cprint(c3))
+print(cprint(c4))
+print(cprint(c5))
+
